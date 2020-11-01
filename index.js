@@ -10,7 +10,7 @@ client.login(process.env.BOT_TOKEN);
 
 client.on('message', message => {
    if(message.content === `${prefix}ping`) {
-      message.channel.send("pong!");
+      message.channel.send("pang!");
    } 
    if(message.content.startsWith(`${prefix}meaning of life`)) {
       message.channel.send(config.meaning_of_life);
