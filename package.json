@@ -1,7 +1,7 @@
 {
   "name": "testbot",
   "version": "1.0.0",
-  "description": "Non dargli fastidio, sta imparadando",
+  "description": "Non dargli fastidio, sta imparando",
   "main": "index.js",
   "author": "Shagon",
   "dependencies": {
@@ -9,8 +9,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node index.js",
-    "test": "nodemon heroku local"
+    "start": "node index.js"
   },
   "license": "ISC"
 }
