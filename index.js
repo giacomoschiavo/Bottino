@@ -1,6 +1,13 @@
+const fs = require("fs");
 const Discord = require('discord.js');
 const {prefix} = require("./config.json");
+
 const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
+const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
+for()
+
 
 client.once('ready', () => {
    console.log('Ready!');
@@ -8,49 +15,38 @@ client.once('ready', () => {
 
 client.login(process.env.BOT_TOKEN);
 
+
 client.on('message', msg => {
    if(!msg.content.startsWith(prefix) || msg.author.bot) return;
    
    const args = msg.content.slice(prefix.length).trim().split(/ +/);
    const command = args.shift().toLowerCase();
 
-   if(command === "args-info") {
-      msg.channel.send(`Il comando usato: ${command}\nArgomenti: ${args}`);
-   }   
+   if(command === "kick") {
+      if(!msg.mentions.users.size) 
+         return msg.reply("Hai bisogno di menzionare qualcuno :/")
+      const taggerUser = msg.mentions.users.first();
+      msg.channel.send(`You wanted to kick: ${taggerUser.username}`);
+   }
+
 });
 
-
-// client.on('message', msg => {
-//    if(!msg.content.startsWith(prefix) || msg.author.bot) return;
+client.on('message', msg => {
+   if(!msg.content.startsWith(prefix) || msg.author.bot) return;
    
-//    const args = msg.content.slice(prefix.length).trim().split(/ +/);
-//    const command = args.shift().toLowerCase();
+   const args = msg.content.slice(prefix.length).trim().split(/ +/);
+   const command = args.shift().toLowerCase();
 
-//    if(command === "kick") {
-//       if(!msg.mentions.users.size) 
-//          return msg.reply("Hai bisogno di menzionare qualcuno :/")
-//       const taggerUser = msg.mentions.users.first();
-//       msg.channel.send(`You wanted to kick: ${taggerUser.username}`);
-//    }
+   if(command === "avatar") {
+      if(!msg.mentions.users.size){ 
+         return msg.channel.send(`Il tuo avatar: <${msg.author.displayAvatarURL({format: "png", dynamic: true})}>`);
+      }
 
-// });
+      const avatarList = msg.mentions.users.map(user => `${user.username}'s avatar: <${user.displayAvatarURL({format: "png", dynamic: true})}>`);
+      return msg.channel.send(avatarList);
+   }
 
-// client.on('message', msg => {
-//    if(!msg.content.startsWith(prefix) || msg.author.bot) return;
-   
-//    const args = msg.content.slice(prefix.length).trim().split(/ +/);
-//    const command = args.shift().toLowerCase();
-
-//    if(command === "avatar") {
-//       if(!msg.mentions.users.size){ 
-//          return msg.channel.send(`Il tuo avatar: <${msg.author.displayAvatarURL({format: "png", dynamic: true})}>`);
-//       }
-
-//       const avatarList = msg.mentions.users.map(user => `${user.username}'s avatar: <${user.displayAvatarURL({format: "png", dynamic: true})}>`);
-//       return msg.channel.send(avatarList);
-//    }
-
-// });
+});
 
 client.on("message", message => {
    if(!message.content.startsWith(prefix) || message.author.bot) return;
