@@ -2,8 +2,11 @@ const fs = require("fs");
 const Discord = require('discord.js');
 const {prefix} = require("./config.json");
 
+const cooldowns = new Discord.Collection();
+
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
+
 
 const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
 for(const file of commandFiles) {
@@ -23,42 +26,47 @@ client.on("message", message => {
    const args = message.content.slice(prefix.length).trim().split(/ +/);
    const commandName = args.shift().toLowerCase();
 
-   if(!client.commands.has(commandName)) return;
+   if(!client.commands.has(commandName)) return message.channel.send(`!${commandName} non esiste :(`);
 
    const command = client.commands.get(commandName);
 
+   if(command.guildOnly && message.channel.type === "dm") {
+      return message.reply("Non posso eseguire questo comando nei dm! :I");
+   }
+
    if(command.args && !args.length) {
-      return message.channel.send(`Non hai dato argomenti, ${message.author}`);
+      let reply = `Non hai dato argomenti per !${command.name}, ${message.author}`;
+
+      if(command.usage) {
+         reply += `\nL'utilizzo corretto prevede: \'${prefix}${command.name} ${command.usage}`;
+      }
+
+      return message.channel.send(reply);
+   }
+
+   if(!cooldowns.has(command.name)) {
+      cooldowns.set(command.name, new Discord.Collection());
+   }
+
+   const now = Date.now();
+   const timestamps = cooldowns.get(command.name);
+   const cooldownAmount = (command.cooldown || 3) * 1000;
+
+   if(timestamps.has(message.author.id)) {
+      const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+      if(now < expirationTime) {
+         const timeLeft = (expirationTime - now) / 1000;
+         return message.reply(`per favore, aspetta ancora ${timeLeft.toFixed(1)} secondi prima di riutilizzare ${command.name}`);
+      } 
+   } else {
+      timestamps.set(message.author.id, now);
+      setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
    }
 
    try {
       command.execute(message, args);
    } catch(error) {
       console.log(error);
-      message.reply(`Errore nel risolvere il comando ${commandName}`);
+      message.reply(`Errore nel risolvere !${commandName}`);
    }
-   
-   // if(command === "avatar") {
-   //    if(!message.mentions.users.size){ 
-   //       return message.channel.send(`Il tuo avatar: <${message.author.displayAvatarURL({format: "png", dynamic: true})}>`);
-   //    }
-
-   //    const avatarList = message.mentions.users.map(user => `${user.username}'s avatar: <${user.displayAvatarURL({format: "png", dynamic: true})}>`);
-   //    return message.channel.send(avatarList);
-   // }
-
-   // if(command === "prune") {
-   //    const amount = parseInt(args[0]) + 1;
-
-	// 	if (isNaN(amount)) {
-	// 		return message.reply('that doesn\'t seem to be a valid number.');
-	// 	} else if (amount <= 1 || amount > 100) {
-	// 		return message.reply('you need to input a number between 1 and 99.');
-	// 	}
-
-	// 	message.channel.bulkDelete(amount, true).catch(err => {
-	// 		console.error(err);
-	// 		message.channel.send('there was an error trying to prune messages in this channel!');
-	// 	});
-   // }
 });
