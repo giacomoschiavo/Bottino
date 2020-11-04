@@ -1,5 +1,6 @@
 module.exports = {
    name: "avatar",
+   aliases: ["icon", "pfp"],
    description: "",
    execute(message, args) {
       if(!message.mentions.users.size){ 
