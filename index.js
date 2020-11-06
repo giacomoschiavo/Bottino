@@ -1,12 +1,13 @@
 const fs = require("fs");
 const Discord = require('discord.js');
-const {prefix} = require("./config.json");
-
+const config = require("./config.json");
+const prefix = config.prefix;
 // salva cooldown per ogni funzione
 const cooldowns = new Discord.Collection();
 
 // salva tutti i comandi disponibili in client.commands
 const client = new Discord.Client();
+
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
 for(const file of commandFiles) {
@@ -19,6 +20,7 @@ client.once('ready', () => {
    console.log('Ready!');
 });
 client.login(process.env.BOT_TOKEN);
+
 
 client.on("message", message => {
    if(!message.content.startsWith(prefix) || message.author.bot) return;
