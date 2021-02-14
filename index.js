@@ -21,7 +21,7 @@ for (const file of commandFiles) {
 client.once("ready", () => {
   console.log("Ready!");
 });
-client.login(process.env.BOT_TOKEN);
+client.login(process.env.BOT_TOKEN).catch((err) => console.log(err));
 
 client.on("message", (message) => {
   if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -54,6 +54,7 @@ client.on("message", (message) => {
   if (!cooldowns.has(command.name)) {
     cooldowns.set(command.name, new Discord.Collection());
   }
+
   const now = Date.now();
   const timestamps = cooldowns.get(command.name);
   // default cooldown di 3 secondi

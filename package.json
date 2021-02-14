@@ -6,7 +6,9 @@
   "author": "Shagon",
   "dependencies": {
     "discord.js": "^12.5.1",
-    "one-liner-joke": "^1.2.0"
+    "one-liner-joke": "^1.2.0",
+    "stoic-api": "^1.5.1",
+    "translate": "^1.2.1"
   },
   "devDependencies": {},
   "scripts": {
